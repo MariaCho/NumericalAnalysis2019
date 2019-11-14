@@ -18,59 +18,15 @@ samples = samples[5000000:5000100]
 newsamples = samples.copy()
 damage.noiseadd(newsamples, 0.7, 0.3)
 matches = recognize.cheat(samples, newsamples, false_positives=0.04, false_negatives=0.1)
+matchesSD = recognize.cheat(samples, samples, false_positives=0.04, false_negatives=0.1)
 x, y = utils.tovalidxy(newsamples, matches)
+xSD, ySD = utils.tovalidxy(samples, matchesSD)
 x = np.array(x).reshape((-1, 1))
 y = np.array(y)
+xSD = np.array(xSD).reshape((-1, 1))
+ySD = np.array(ySD)
 
-xP1, xP2 = np.split(x,2)
-yP1, yP2 = np.split(y,2)
-
-#plt.scatter(xP1, yP1, s=10, color='b')
-#plt.scatter(xP2, yP2, s=10, color='g')
-#plt.show()
-
-polynomial_features_p1= PolynomialFeatures(degree=10)
-polynomial_features_p2= PolynomialFeatures(degree=10)
-x_poly_p1 = polynomial_features_p1.fit_transform(xP1)
-x_poly_p2 = polynomial_features_p2.fit_transform(xP2)
-
-model_p1 = LinearRegression()
-model_p2 = LinearRegression()
-model_p1.fit(x_poly_p1, yP1)
-model_p2.fit(x_poly_p2, yP2)
-y_poly_pred_p1 = model_p1.predict(x_poly_p1)
-y_poly_pred_p2 = model_p2.predict(x_poly_p2)
-
-#rmse = np.sqrt(mean_squared_error(y,y_poly_pred))
-#r2 = r2_score(y,y_poly_pred)
-#print(rmse)
-#print(r2)
-
-#plt.scatter(x, y, s=10)
-
-# sort the values of x before line plot
-sort_axis = operator.itemgetter(0)
-sorted_zip_p1 = sorted(zip(xP1,y_poly_pred_p1), key=sort_axis)
-sorted_zip_p2 = sorted(zip(xP2,y_poly_pred_p2), key=sort_axis)
-xP1, y_poly_pred_p1 = zip(*sorted_zip_p1)
-xP2, y_poly_pred_p2 = zip(*sorted_zip_p2)
-plt.plot(samples, label='real')
-plt.scatter(xP1, yP1, s=10, color='b')
-plt.scatter(xP2, yP2, s=10, color='b')
-plt.plot(xP1, y_poly_pred_p1, color='m')
-plt.plot(xP2, y_poly_pred_p2, color='g')
-plt.show()
-#-------------------------
-
-#fcubic = interp1d(x, y, kind='cubic', fill_value='extrapolate')
-
-#utils.repair(newsamples, matches, fcubic)
-
-#plt.title('Cubic')
-#plt.xlabel('Frame')
-#plt.ylabel('Amplitude')
-#plt.plot(samples, label='real')
-#plt.plot(newsamples, label='interpolated')
-#plt.legend(loc='best')
-
-#plt.show()
+xP, yP, xSD, ySD = utils.partir(x, y, xSD, ySD, 5)
+polynomial_features = PolynomialFeatures(degree=10)
+y_poly_pred = utils.polinomialR(xP, yP, ySD, polynomial_features)
+utils.plotting(xP, yP, samples, y_poly_pred)
