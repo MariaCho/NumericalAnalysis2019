@@ -26,7 +26,7 @@ y = np.array(y)
 xSD = np.array(xSD).reshape((-1, 1))
 ySD = np.array(ySD)
 
-xP, yP, xSD, ySD = utils.partir(x, y, xSD, ySD, 5)
+xP, yP, xSD, ySD = utils.partir(x, y, xSD, ySD, 10)
 polynomial_features = PolynomialFeatures(degree=10)
 y_poly_pred = utils.polinomialR(xP, yP, ySD, polynomial_features)
 utils.plotting(xP, yP, samples, y_poly_pred)

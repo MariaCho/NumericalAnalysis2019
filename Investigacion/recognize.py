@@ -16,20 +16,3 @@ def cheat(y0, y1, false_positives=0, false_negatives=0):
                 matches[i] = True
 
     return matches
-
-def kevin(y, maxdelta):
-    """
-    Recognizes via a method defined by Kevin.
-    """
-    matches = [True] * len(y)
-    laststable = y[0]
-
-    for i in range(1, len(y)):
-        delta = abs(float(laststable) - float(y[i]))
-
-        if delta > maxdelta:
-            matches[i] = False
-        else:
-            laststable = y[i]
-
-    return matches
